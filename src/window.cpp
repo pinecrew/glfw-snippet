@@ -50,6 +50,9 @@ void Window::loop(float frame_rate) {
     if (init_callback) {
         init_callback();
     }
+    if (keyboard_callback) {
+        glfwSetKeyCallback(window, keyboard_callback);
+    }
     // Loop until the user closes the window
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
@@ -68,4 +71,8 @@ void Window::render(void (*render_func)(void)) {
 
 void Window::init_gl(void (*init_func)(void)) {
     init_callback = init_func;
+}
+
+void Window::keyboard(void (*keyboard_func)(GLFWwindow *, int, int, int, int)) {
+    keyboard_callback = keyboard_func;
 }

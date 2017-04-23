@@ -9,6 +9,7 @@ Vertex data;
 Vertex point;
 
 flat_data_t * draw_data;
+bool pause_flag = false;
 
 std::vector<GLfloat> generate_grid(GLuint vlines, GLuint hlines, float r) {
     const uint32_t ncoords = 4;
@@ -94,10 +95,21 @@ void render(void) {
     point.load_data(draw_data->data + current_frame_start, draw_data->data + current_frame_start + frame_size, 2);
     point.render(GL_POINTS);
 
-    if (current_frame > draw_data->frame_count) {
-        current_frame = 0;
-    } else {
-        current_frame++;
+    if (!pause_flag) {
+        if (current_frame > draw_data->frame_count) {
+            current_frame = 0;
+        } else {
+            current_frame++;
+        }
+    }
+}
+
+void keyboard(GLFWwindow * window, int key, int scancode, int action, int mods) {
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+        glfwSetWindowShouldClose(window, true);
+    }
+    if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) {
+        pause_flag = !pause_flag;
     }
 }
 
@@ -107,6 +119,7 @@ int main() {
     window.init_window("Flat Render Demo", 500, 500);
     window.init_gl(init);
     window.render(render);
+    window.keyboard(keyboard);
     window.loop(30.0f);
 
     deinit();
