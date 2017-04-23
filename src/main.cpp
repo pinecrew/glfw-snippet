@@ -1,17 +1,28 @@
+#include <vector>
 #include "window.hpp"
 #include "shader.hpp"
+#include "vertex.hpp"
 
-GLfloat vert[] = {
+std::vector<GLfloat> vert = {
     -0.5f, -0.5f, 0.0f,
     +0.5f, -0.5f, 0.0f,
-    +0.0f, +0.5f, 0.0f
+    +0.5f, +0.5f, 0.0f,
+    // -0.5f, +0.5f, 0.0f
 };
-
-GLuint VBO;
-GLuint VAO;
 ShaderProgram shader;
+Vertex data;
 
 /*
+=======
+// GLuint VBO;
+// GLuint VAO;
+GLuint vertexShader;
+GLuint fragmentShader;
+GLuint shaderProgram;
+
+Vertex data;
+
+>>>>>>> Stashed changes
 void check_status(GLuint param, GLuint type) {
     const GLuint size = 1024;
     GLint success;
@@ -52,20 +63,7 @@ void init(void) {
     shader.link();
     shader.run();
 
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vert), vert, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid *)0);
-    glEnableVertexAttribArray(0);
-
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vert), vert, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid *)0);
-    glEnableVertexAttribArray(0);
-    glBindVertexArray(0);
+    data.load_data(vert, 3, 3);
 }
 
 void deinit() {
@@ -75,9 +73,7 @@ void render(void) {
     glClear(GL_COLOR_BUFFER_BIT);
 
     shader.run();
-    glBindVertexArray(VAO);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
-    glBindVertexArray(0);
+    data.render(GL_TRIANGLE_STRIP);
 }
 
 int main() {
