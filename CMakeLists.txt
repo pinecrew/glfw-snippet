@@ -12,9 +12,12 @@ include_directories(
     ${GLEW_INCLUDE_DIRS}
     ${FREETYPE_INCLUDE_DIRS}
 )
-add_executable(ex-window src/window.cpp src/error.cpp src/main.cpp)
+add_executable(ex-window src/window.cpp src/error.cpp src/main.cpp
+    src/shader.cpp)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/vertex.glsl ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/src/fragment.glsl ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 target_compile_features(ex-window PRIVATE cxx_aggregate_default_initializers)
-target_link_libraries(ex-window 
+target_link_libraries(ex-window
     ${OPENGL_gl_LIBRARY}
     ${GLFW_LIBRARIES}
     ${GLEW_LIBRARIES}
