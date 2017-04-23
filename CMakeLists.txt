@@ -19,10 +19,14 @@ add_executable(ex-window
     src/shader.cpp 
     src/vertex.cpp
     src/loader.cpp
+    src/font.cpp
 )
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/assets/vertex.glsl ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/assets/fragment.glsl ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/assets/vertex_text.glsl ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/assets/fragment_text.glsl ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/assets/dump.bin ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/assets/FiraSans-Medium.ttf ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 target_compile_features(ex-window PRIVATE cxx_aggregate_default_initializers)
 target_link_libraries(ex-window
     ${OPENGL_gl_LIBRARY}

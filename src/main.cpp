@@ -3,13 +3,20 @@
 #include "shader.hpp"
 #include "vertex.hpp"
 #include "loader.hpp"
+#include "font.hpp"
 
 ShaderProgram shader;
+ShaderProgram text;
 Vertex data;
 Vertex point;
 
+Font font;
+
 flat_data_t * draw_data;
 bool pause_flag = false;
+
+const uint16_t w_width = 500;
+const uint16_t w_height = 500;
 
 std::vector<GLfloat> generate_grid(GLuint vlines, GLuint hlines, float r) {
     const uint32_t ncoords = 4;
@@ -55,13 +62,19 @@ void init(void) {
     shader.addShader("vertex.glsl", GL_VERTEX_SHADER);
     shader.addShader("fragment.glsl", GL_FRAGMENT_SHADER);
     shader.link();
-    shader.run();
+
+    text.create();
+    text.addShader("vertex_text.glsl", GL_VERTEX_SHADER);
+    text.addShader("fragment_text.glsl", GL_FRAGMENT_SHADER);
+    text.link();
 
     draw_data = load_data("dump.bin");
 
     auto r = find_area_radius(draw_data);
     auto grid = generate_grid(20, 10, r);
     data.load_data(grid, 2);
+
+    font.load("FiraSans-Medium.ttf", 32);
 }
 
 void deinit() {
@@ -81,9 +94,6 @@ void render(void) {
 
     data.render(GL_LINES);
 
-    glDisable(GL_BLEND);
-    glDisable(GL_ALPHA_TEST);
-
     shader.uniform("ourColor", glm::vec4(1.0f, 0.5f, 0.5f, 1.0f));
 
     // don't do that
@@ -94,6 +104,15 @@ void render(void) {
 
     point.load_data(draw_data->data + current_frame_start, draw_data->data + current_frame_start + frame_size, 2);
     point.render(GL_POINTS);
+
+    text.run();
+    glm::mat4 projection = glm::ortho(0.0f, static_cast<GLfloat>(w_width), 0.0f, static_cast<GLfloat>(w_height));
+    text.uniform("projection", projection);
+    text.uniform("textColor", glm::vec3(1.0f, 1.0f, 1.0f));
+    font.render("test", glm::vec3(0.0f, 0.0f, 0.0f), 1.0f);
+
+    glDisable(GL_BLEND);
+    glDisable(GL_ALPHA_TEST);
 
     if (!pause_flag) {
         if (current_frame > draw_data->frame_count) {
@@ -116,7 +135,7 @@ void keyboard(GLFWwindow * window, int key, int scancode, int action, int mods) 
 int main() {
     Window window;
 
-    window.init_window("Flat Render Demo", 500, 500);
+    window.init_window("Flat Render Demo", w_width, w_height);
     window.init_gl(init);
     window.render(render);
     window.keyboard(keyboard);

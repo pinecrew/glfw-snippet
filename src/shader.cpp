@@ -74,6 +74,14 @@ void ShaderProgram::uniform(const char* varName, glm::vec2 value) {
     glUniform2f(glGetUniformLocation(program, varName), value.x, value.y);
 }
 
+void ShaderProgram::uniform(const char* varName, glm::vec3 value) {
+    glUniform3f(glGetUniformLocation(program, varName), value.x, value.y, value.z);
+}
+
 void ShaderProgram::uniform(const char* varName, glm::vec4 value) {
     glUniform4f(glGetUniformLocation(program, varName), value.x, value.y, value.z, value.w);
+}
+
+void ShaderProgram::uniform(const char* varName, glm::mat4 projection) {
+    glUniformMatrix4fv(glGetUniformLocation(program, varName), 1, GL_FALSE, glm::value_ptr(projection));
 }
