@@ -74,13 +74,13 @@ void init(void) {
     auto grid = generate_grid(20, 10, r);
     data.load_data(grid, 2);
 
-    font.load("FiraSans-Medium.ttf", 32);
+    font.load("FiraSans-Medium.ttf", 18);
 }
 
 void deinit() {
 }
 
-void render(void) {
+void render(Window * window) {
     static uint32_t current_frame = 0;
 
     glClear(GL_COLOR_BUFFER_BIT);
@@ -109,7 +109,9 @@ void render(void) {
     glm::mat4 projection = glm::ortho(0.0f, static_cast<GLfloat>(w_width), 0.0f, static_cast<GLfloat>(w_height));
     text.uniform("projection", projection);
     text.uniform("textColor", glm::vec3(1.0f, 1.0f, 1.0f));
-    font.render("test", glm::vec3(0.0f, 0.0f, 0.0f), 1.0f);
+    char buff[64];
+    sprintf(buff, "fps: %.2f", window->get_fps());
+    font.render(std::string(buff), glm::vec3(10.0f, 10.0f, 0.0f), 1.0f);
 
     glDisable(GL_BLEND);
     glDisable(GL_ALPHA_TEST);

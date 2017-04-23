@@ -1,8 +1,8 @@
 #include "window.hpp"
 
-void app_sleep(float frame_rate) {
+void Window::window_sleep() {
     static double frame_start = 0;
-    double wait_time = 1.0 / frame_rate;
+    double wait_time = 1.0 / fps;
 
     double right_now = glfwGetTime();
     if (right_now - frame_start < wait_time) {
@@ -10,6 +10,7 @@ void app_sleep(float frame_rate) {
         long duration = long(std::round(dur * 1000.0));
         std::this_thread::sleep_for(std::chrono::milliseconds(duration));
     }
+    real_fps = 1.0f / (glfwGetTime() - frame_start);
     frame_start = glfwGetTime();
 }
 
@@ -46,7 +47,8 @@ void Window::init_window(const char * caption, uint16_t width, uint16_t height) 
     glViewport(0, 0, w_width, w_height);
 }
 
-void Window::loop(float frame_rate) {
+void Window::loop(float fps) {
+    this->fps = fps;
     if (init_callback) {
         init_callback();
     }
@@ -57,15 +59,15 @@ void Window::loop(float frame_rate) {
     while (!glfwWindowShouldClose(window)) {
         glfwPollEvents();
         if (render_callback) {
-            render_callback();
+            render_callback(this);
         }
-        app_sleep(frame_rate);
+        window_sleep();
         glfwSwapBuffers(window);
     }
     glfwTerminate();
 }
 
-void Window::render(void (*render_func)(void)) {
+void Window::render(void (*render_func)(Window * window)) {
     render_callback = render_func;
 }
 
@@ -75,4 +77,8 @@ void Window::init_gl(void (*init_func)(void)) {
 
 void Window::keyboard(void (*keyboard_func)(GLFWwindow *, int, int, int, int)) {
     keyboard_callback = keyboard_func;
+}
+
+float Window::get_fps() {
+    return real_fps;
 }
