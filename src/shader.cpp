@@ -74,4 +74,6 @@ void ShaderProgram::uniform(const char* varName, glm::vec2 value) {
     glUniform2f(glGetUniformLocation(program, varName), value.x, value.y);
 }
 
-
+void ShaderProgram::uniform(const char* varName, glm::vec4 value) {
+    glUniform4f(glGetUniformLocation(program, varName), value.x, value.y, value.z, value.w);
+}

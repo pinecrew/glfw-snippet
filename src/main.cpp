@@ -3,57 +3,36 @@
 #include "shader.hpp"
 #include "vertex.hpp"
 
-std::vector<GLfloat> vert = {
-    -0.5f, -0.5f, 0.0f,
-    +0.5f, -0.5f, 0.0f,
-    +0.5f, +0.5f, 0.0f,
-    // -0.5f, +0.5f, 0.0f
-};
 ShaderProgram shader;
 Vertex data;
 
-/*
-=======
-// GLuint VBO;
-// GLuint VAO;
-GLuint vertexShader;
-GLuint fragmentShader;
-GLuint shaderProgram;
+std::vector<GLfloat> generate_grid(float r) {
+    GLuint lines_count = 10;
+    GLuint coordinate_count = 4;
+    GLuint elements_count = 2 * coordinate_count * 10 + 2 * 4;
+    float grid_step = 2.0 * r / (float) lines_count;
+    std::vector<GLfloat> grid_data;
 
-Vertex data;
+    grid_data.resize(elements_count);
 
->>>>>>> Stashed changes
-void check_status(GLuint param, GLuint type) {
-    const GLuint size = 1024;
-    GLint success;
-    GLchar log[size];
+    uint32_t first_part = elements_count / 2;
 
-    if (type == GL_COMPILE_STATUS) {
-        glGetShaderiv(param, type, &success);
-        if (!success) {
-            glGetShaderInfoLog(param, size, NULL, log);
-            send_error("shader_compile", log, -1);
-        }
-    } else if (type == GL_LINK_STATUS) {
-        glGetProgramiv(param, type, &success);
-        if (!success) {
-            glGetProgramInfoLog(param, size, NULL, log);
-            send_error("program_link", log, -1);
-        }
+    for (uint32_t i = 0; i < first_part; i += coordinate_count) {
+        // vertical lines
+        grid_data[i + 0] = -r + grid_step * (i / coordinate_count);
+        grid_data[i + 1] = -r;
+        grid_data[i + 2] = -r + grid_step * (i / coordinate_count);
+        grid_data[i + 3] = r;
+        // horizontal lines
+        grid_data[first_part + i + 0] = -r;
+        grid_data[first_part + i + 1] = -r + grid_step * (i / coordinate_count);
+        grid_data[first_part + i + 2] = r;
+        grid_data[first_part + i + 3] = -r + grid_step * (i / coordinate_count);
     }
+
+    return grid_data;
 }
 
-GLuint compile_shader(const GLchar ** code, GLuint type) {
-    GLuint shader = glCreateShader(type);
-    glShaderSource(shader, 1, code, NULL);
-    glCompileShader(shader);
-
-    check_status(shader, GL_COMPILE_STATUS);
-
-    return shader;
-}
-
-*/
 void init(void) {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
@@ -62,8 +41,10 @@ void init(void) {
     shader.addShader("fragment.glsl", GL_FRAGMENT_SHADER);
     shader.link();
     shader.run();
+    shader.uniform("ourColor", glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
 
-    data.load_data(vert, 3, 3);
+    auto grid = generate_grid(0.9f);
+    data.load_data(grid, 2, 2);
 }
 
 void deinit() {
@@ -73,7 +54,7 @@ void render(void) {
     glClear(GL_COLOR_BUFFER_BIT);
 
     shader.run();
-    data.render(GL_TRIANGLE_STRIP);
+    data.render(GL_LINES);
 }
 
 int main() {

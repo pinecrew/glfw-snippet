@@ -3,6 +3,7 @@
 void Vertex::load_data(const std::vector<GLfloat> vertex, const GLint size, const GLsizei strides) {
     _size_count = size;
     _stride_count = strides;
+    _vert_size = vertex.size();
 
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -23,6 +24,6 @@ void Vertex::load_data(const std::vector<GLfloat> vertex, const GLint size, cons
 
 void Vertex::render(const GLuint type) {
     glBindVertexArray(VAO);
-    glDrawArrays(type, 0, _stride_count);
+    glDrawArrays(type, 0, _vert_size);
     glBindVertexArray(0);
 }
