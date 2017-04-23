@@ -10,10 +10,9 @@ Vertex point;
 
 flat_data_t * draw_data;
 
-std::vector<GLfloat> generate_grid(float r) {
-    GLuint lines_count = 10;
+std::vector<GLfloat> generate_grid(GLuint lines_count, float r) {
     GLuint coordinate_count = 4;
-    GLuint elements_count = 2 * coordinate_count * 10 + 2 * 4;
+    GLuint elements_count = 2 * coordinate_count * lines_count + 2 * 4;
     float grid_step = 2.0 * r / (float) lines_count;
     std::vector<GLfloat> grid_data;
 
@@ -58,7 +57,7 @@ void init(void) {
     draw_data = load_data("dump.bin");
 
     auto r = find_area_radius(draw_data);
-    auto grid = generate_grid(r);
+    auto grid = generate_grid(20, r);
     data.load_data(grid, 2);
 }
 
@@ -103,10 +102,10 @@ void render(void) {
 int main() {
     Window window;
 
-    window.init_window("test", 500, 500);
+    window.init_window("Flat Render Demo", 500, 500);
     window.init_gl(init);
     window.render(render);
-    window.loop(60.0f);
+    window.loop(30.0f);
 
     deinit();
 
