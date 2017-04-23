@@ -10,27 +10,29 @@ Vertex point;
 
 flat_data_t * draw_data;
 
-std::vector<GLfloat> generate_grid(GLuint lines_count, float r) {
-    GLuint coordinate_count = 4;
-    GLuint elements_count = 2 * coordinate_count * lines_count + 2 * 4;
-    float grid_step = 2.0 * r / (float) lines_count;
+std::vector<GLfloat> generate_grid(GLuint vlines, GLuint hlines, float r) {
+    const uint32_t ncoords = 4;
+    const uint32_t elements_count = ncoords * (vlines + hlines);
+    const float vgrid_step = 2.0 * r / ((float) hlines - 1.0);
+    const float hgrid_step = 2.0 * r / ((float) vlines - 1.0);
     std::vector<GLfloat> grid_data;
 
     grid_data.resize(elements_count);
 
-    uint32_t first_part = elements_count / 2;
-
-    for (uint32_t i = 0; i < first_part; i += coordinate_count) {
+    for (uint32_t i = 0; i < vlines; ++i) {
         // vertical lines
-        grid_data[i + 0] = -r + grid_step * (i / coordinate_count);
-        grid_data[i + 1] = -r;
-        grid_data[i + 2] = -r + grid_step * (i / coordinate_count);
-        grid_data[i + 3] = r;
+        grid_data[i * ncoords + 0] = -r + hgrid_step * i;
+        grid_data[i * ncoords + 1] = -r;
+        grid_data[i * ncoords + 2] = -r + hgrid_step * i;
+        grid_data[i * ncoords + 3] = r;
+    }
+    uint32_t first_part = vlines * ncoords;
+    for (uint32_t i = 0; i < hlines; ++i) {
         // horizontal lines
-        grid_data[first_part + i + 0] = -r;
-        grid_data[first_part + i + 1] = -r + grid_step * (i / coordinate_count);
-        grid_data[first_part + i + 2] = r;
-        grid_data[first_part + i + 3] = -r + grid_step * (i / coordinate_count);
+        grid_data[first_part + i * ncoords + 0] = -r;
+        grid_data[first_part + i * ncoords + 1] = -r + vgrid_step * i;
+        grid_data[first_part + i * ncoords + 2] = r;
+        grid_data[first_part + i * ncoords + 3] = -r + vgrid_step * i;
     }
 
     return grid_data;
@@ -57,7 +59,7 @@ void init(void) {
     draw_data = load_data("dump.bin");
 
     auto r = find_area_radius(draw_data);
-    auto grid = generate_grid(20, r);
+    auto grid = generate_grid(20, 10, r);
     data.load_data(grid, 2);
 }
 
