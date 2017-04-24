@@ -73,6 +73,7 @@ void init(void) {
 }
 
 void deinit() {
+    clean_data(draw_data);
 }
 
 void render(Window * window) {
