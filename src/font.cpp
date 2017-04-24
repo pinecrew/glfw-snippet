@@ -1,5 +1,12 @@
 #include "font.hpp"
 
+void Font::shader(const char * vertex_shader, const char * fragment_shader) {
+    _shader.create();
+    _shader.addShader(vertex_shader, GL_VERTEX_SHADER);
+    _shader.addShader(fragment_shader, GL_FRAGMENT_SHADER);
+    _shader.link();
+}
+
 void Font::load(const char * font_name, const uint16_t size) {
     FT_Library ft;
     // All functions return a value different than 0 whenever an error occurred
@@ -72,7 +79,12 @@ void Font::load(const char * font_name, const uint16_t size) {
     glBindVertexArray(0);
 }
 
-void Font::render(std::string text, glm::vec3 pos, GLfloat scale) {
+void Font::render(std::string text, glm::vec3 pos, glm::vec3 color, GLfloat scale) {
+    _shader.run();
+    glm::mat4 projection = glm::ortho(0.0f, _width, 0.0f, _height);
+    _shader.uniform("projection", projection);
+    _shader.uniform("textColor", color);
+
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(VAO);
 

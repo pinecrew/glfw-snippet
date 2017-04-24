@@ -5,18 +5,17 @@
 #include "loader.hpp"
 #include "font.hpp"
 
+const uint16_t w_width = 500;
+const uint16_t w_height = 500;
+
 ShaderProgram shader;
-ShaderProgram text;
 Vertex data;
 Vertex point;
 
-Font font;
+Font font(w_width, w_height);
 
 flat_data_t * draw_data;
 bool pause_flag = false;
-
-const uint16_t w_width = 500;
-const uint16_t w_height = 500;
 
 std::vector<GLfloat> generate_grid(GLuint vlines, GLuint hlines, float r) {
     const uint32_t ncoords = 4;
@@ -63,17 +62,13 @@ void init(void) {
     shader.addShader("fragment.glsl", GL_FRAGMENT_SHADER);
     shader.link();
 
-    text.create();
-    text.addShader("vertex_text.glsl", GL_VERTEX_SHADER);
-    text.addShader("fragment_text.glsl", GL_FRAGMENT_SHADER);
-    text.link();
-
     draw_data = load_data("dump.bin");
 
     auto r = find_area_radius(draw_data);
     auto grid = generate_grid(20, 10, r);
     data.load_data(grid, 2);
 
+    font.shader("vertex_text.glsl", "fragment_text.glsl");
     font.load("FiraSans-Medium.ttf", 18);
 }
 
@@ -105,13 +100,9 @@ void render(Window * window) {
     point.load_data(draw_data->data + current_frame_start, draw_data->data + current_frame_start + frame_size, 2);
     point.render(GL_POINTS);
 
-    text.run();
-    glm::mat4 projection = glm::ortho(0.0f, static_cast<GLfloat>(w_width), 0.0f, static_cast<GLfloat>(w_height));
-    text.uniform("projection", projection);
-    text.uniform("textColor", glm::vec3(1.0f, 1.0f, 1.0f));
     char buff[64];
     sprintf(buff, "fps: %.2f", window->get_fps());
-    font.render(std::string(buff), glm::vec3(10.0f, 10.0f, 0.0f), 1.0f);
+    font.render(buff, glm::vec3(10.0f, 10.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f));
 
     glDisable(GL_BLEND);
     glDisable(GL_ALPHA_TEST);
