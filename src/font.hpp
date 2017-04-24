@@ -1,7 +1,6 @@
 #pragma once
 #include <iostream>
 #include <cstdint>
-// #include <string>
 #include <map>
 #include <GL/glew.h>
 // OpenGL

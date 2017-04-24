@@ -35,8 +35,10 @@ void Window::init_window(const char * caption, uint16_t width, uint16_t height) 
     }
     glfwMakeContextCurrent(window);
 
-    send_info(2, "Renderer ", glGetString(GL_RENDERER));
-    send_info(2, "OpenGL version supported ", glGetString(GL_VERSION));
+    send_info(2, "GL Vendor ", glGetString(GL_VENDOR));
+    send_info(2, "GL Renderer ", glGetString(GL_RENDERER));
+    send_info(2, "GL Version ", glGetString(GL_VERSION));
+    send_info(2, "GLSL Version ", glGetString(GL_SHADING_LANGUAGE_VERSION));
 
     // Initialize GLEW to setup the OpenGL Function pointers
     glewExperimental = GL_TRUE;
